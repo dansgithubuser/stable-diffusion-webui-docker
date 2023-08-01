@@ -155,6 +155,11 @@ if args.run:
     uid = os.getuid()
     invoke(f'sudo chown 10000:{uid} -R models outputs')
     invoke('sudo chmod 775 -R models outputs')
+    if os.path.exists('run_extra_webui_args.txt'):
+        with open('run_extra_webui_args.txt') as f:
+            extra_webui_args = f.read()
+    else:
+        extra_webui_args = ''
     invoke(f'''docker run
         --name stable-diffusion-webui
         --gpus all
@@ -163,7 +168,7 @@ if args.run:
         -v {DIR}/outputs:/app/stable-diffusion-webui/outputs
         -d
         stable-diffusion-webui
-        bash webui.sh --listen
+        bash webui.sh --listen {extra_webui_args}
     ''')
     invoke('cp model.pt models/model.pt')
 
